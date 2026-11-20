@@ -1,59 +1,72 @@
-# Corner Bean Coffee: landing page with an editable menu
+# Corner Bean Coffee
 
-A responsive landing page for a fictional coffee shop. The menu is stored in a small Google Firebase (Firestore) database, and the owner edits it from an admin page. Add or delete an item and it shows up on the site immediately, with no code changes and no redeploy.
+A responsive landing page for a fictional coffee shop, with an admin panel where the owner edits the site without touching code. Menu items, announcements and opening hours are stored in a Firebase database and update live for every visitor. The contact form delivers messages straight to the owner's email.
 
-No frameworks and no build step. Plain HTML, CSS and JavaScript modules.
+**Live demo:** https://mykhailopalamar.github.io/corner-bean/
 
-## What's inside
+> Portfolio project. The business, address and prices are made up.
 
-- Sticky header with smooth-scroll navigation
-- Hero section, menu, about, opening hours and address
-- Live menu loaded from Firestore (updates in real time)
-- `admin.html`: password-protected page to add and delete menu items
-- Contact form with client-side validation (demo, sends nothing)
-- Layout works from phone width up to desktop
+## Features
 
-## Photos
+**Public site**
+- Sticky header with smooth-scroll navigation, hero, menu, about and visit sections
+- Menu, opening hours and announcement banner load from the database and update in real time, with no page reload
+- Contact form with client-side validation that sends messages to the owner's email
+- Responsive layout, from phone width up to desktop
 
-The page expects three stock photos in the `images/` folder (`hero.jpg`, `pastry.jpg`, `interior.jpg`). See `images/README.md` for where to get them. Without them the page still works and shows plain colored blocks.
+**Admin panel** (`admin.html`, owner login)
+- Add and delete menu items
+- Publish and delete announcements shown at the top of the site
+- Edit opening hours (up to 7 lines of free text)
+- Email and password sign-in through Firebase Authentication
 
-## Two storage modes
+## Tech stack
 
-| | Demo mode (default) | Firebase mode |
-|---|---|---|
-| Setup | none | 7 steps below |
-| Where the menu lives | this browser's localStorage | shared Firestore database |
-| Who sees changes | only you, in this browser (other tabs update live) | every visitor |
-| Admin login | none | owner account |
+- HTML, CSS and vanilla JavaScript (ES modules), with no frameworks and no build step
+- Firebase Firestore (database) and Firebase Authentication
+- Web3Forms (contact form to email, no backend needed)
+- GitHub Pages (hosting)
 
-The mode is chosen automatically: it switches to Firebase as soon as `firebase-config.js` contains real keys. `index.html` and `admin.html` do not change.
+## How it works
 
-**Try demo mode now:** serve the folder (for example `python -m http.server`, then open `http://localhost:8000/admin.html`), add and delete items, and keep `http://localhost:8000/` open in another tab to watch the menu update.
+- `index.html` reads the `menu`, `announcements` and `settings` collections from Firestore and re-renders when they change.
+- `admin.html` lets the signed-in owner write to those collections.
+- **Security does not depend on hiding the admin page.** The Firebase config in `firebase-config.js` is public by design. Writes are protected by Firestore security rules (`firestore.rules`) that allow only the owner's account UID, and validate field types and lengths. Everyone else has read-only access.
+- All user-entered text is inserted with `textContent`, so nothing typed in the admin panel or the contact form can inject HTML.
+- If Firebase is not configured, the project falls back to a local demo mode that stores data in the browser's `localStorage`, so it can be tried with no setup.
 
-JavaScript modules do not load from `file://` in most browsers, so double-clicking the files will not work. Use a local server (VS Code Live Server also works) or GitHub Pages.
+## Project structure
 
-Note: on GitHub Pages without Firebase, each visitor would only see the starter menu, because demo-mode edits live in the editor's own browser. Set up Firebase to publish menu changes to everyone.
+```
+index.html          public site
+admin.html          owner admin panel
+firebase-config.js  Firebase and Web3Forms keys (public by design)
+firestore.rules     database security rules
+js/
+  db.js             loads Firebase
+  store.js          menu storage (Firestore or local)
+  content.js        announcements and opening hours storage
+  menu.js           renders the menu on the site
+  site.js           renders announcements and hours on the site
+  contact.js        contact form -> email
+  admin.js          admin: login and menu management
+  admin-extra.js    admin: announcements and opening hours
+images/             photos used on the site
+```
 
-## Set up the editable menu (free, no card needed)
+## Run it locally
 
-1. **Create a project** at https://console.firebase.google.com (Spark plan is free).
-2. **Register a web app**: Project settings → Your apps → Web (`</>`). Copy the config values into `firebase-config.js`.
-3. **Create the database**: Build → Firestore Database → Create database (production mode, any region).
-4. **Turn on login**: Build → Authentication → Sign-in method → Email/Password → Enable.
-5. **Create the owner account**: Authentication → Users → Add user (your email and a strong password). Copy the **User UID** shown in the table.
-6. **Set the rules**: Firestore Database → Rules. Paste the contents of `firestore.rules`, replace `PASTE_OWNER_UID` with your User UID, and publish.
-7. Open `admin.html`, log in, click **Load starter menu** once, then add or delete items.
+JavaScript modules do not load from `file://`, so serve the folder:
 
-### Why the rules check the UID
+1. Open the folder in VS Code and use the **Live Server** extension (Open with Live Server on `index.html`), or run `python -m http.server` and open `http://localhost:8000`.
+2. Without Firebase keys the site runs in demo mode. To use your own backend, follow the setup below.
 
-The Firebase config in `firebase-config.js` is public by design, so anyone could create their own account with it. The rules therefore allow writes only from the owner's UID, not from "any logged-in user". Reading the menu is public.
+## Set up your own backend (free)
 
-## Deploy for free
-
-Push the repo to GitHub, then enable **Settings → Pages → Deploy from branch → main**. The site will be live at `https://<your-username>.github.io/<repo-name>/`.
-
-In Firebase, add `<your-username>.github.io` under Authentication → Settings → Authorized domains so login works on the live site.
-
-## Notes
-
-The business, address and prices are made up. The contact form is a demo and does not send data anywhere. To make it real, connect it to a service such as Formspree or Netlify Forms.
+1. Create a project at [console.firebase.google.com](https://console.firebase.google.com) (Spark plan is free).
+2. Register a web app and copy its config into `firebase-config.js`.
+3. Create a Firestore database and enable **Authentication → Email/Password**.
+4. Add the owner user and copy their **User UID**.
+5. Paste `firestore.rules` into Firestore → Rules, replace `PASTE_OWNER_UID` with the UID, and publish.
+6. For the contact form, get a free access key at [web3forms.com](https://web3forms.com) and put it in `contactConfig.accessKey` in `firebase-config.js`.
+7. Deploy: push to GitHub and enable **Settings → Pages → Deploy from branch → main**. Add `<your-username>.github.io` to **Authentication → Settings → Authorized domains** so login works on the live site.
