@@ -20,5 +20,22 @@ service cloud.firestore {
       allow create, update: if isOwner() && validItem();
       allow delete: if isOwner();
     }
+
+    match /announcements/{id} {
+      allow read: if true;
+      allow create: if isOwner()
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 200;
+      allow delete: if isOwner();
+    }
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isOwner() && docId == "hours"
+          && request.resource.data.lines is list
+          && request.resource.data.lines.size() > 0
+          && request.resource.data.lines.size() <= 7;
+    }
   }
 }

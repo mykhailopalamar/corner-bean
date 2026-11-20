@@ -79,6 +79,9 @@
     input:focus, textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
     #status { min-height: 1.4em; font-size: 0.95rem; }
 
+    #announcements { background: var(--accent); color: #fff; font-family: system-ui, sans-serif; text-align: center; padding: 8px 20px; font-size: 0.95rem; }
+    #announcements p + p { margin-top: 4px; border-top: 1px solid rgba(255,255,255,.3); padding-top: 4px; }
+
     footer { padding: 28px 0; text-align: center; color: var(--muted); font-size: 0.85rem; font-family: system-ui, sans-serif; }
   </style>
 </head>
@@ -94,6 +97,7 @@
       </nav>
     </div>
   </header>
+  <div id="announcements" hidden></div>
 
   <main id="top">
     <div class="hero">
@@ -133,7 +137,7 @@
       <div class="wrap">
         <h2>Visit</h2>
         <dl class="hours">
-          <div>
+          <div id="hours">
             <dt>Hours</dt>
             <dd>Mon–Fri: 7:00 – 18:00</dd>
             <dd>Sat–Sun: 8:00 – 16:00</dd>
@@ -162,6 +166,7 @@
             <label for="message">Message</label>
             <textarea id="message" name="message" rows="4"></textarea>
           </div>
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none">
           <button class="btn" type="submit">Send</button>
           <p id="status" role="status"></p>
         </form>
@@ -174,29 +179,7 @@
   </footer>
 
   <script type="module" src="js/menu.js"></script>
-  <script>
-    // Demo form: validates input in the browser, does not send data anywhere.
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("status");
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const message = form.message.value.trim();
-      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-      if (!name || !message) {
-        status.textContent = "Please fill in your name and a message.";
-        return;
-      }
-      if (!emailOk) {
-        status.textContent = "That email address does not look right.";
-        return;
-      }
-      status.textContent = "Thanks, " + name + "! (Demo form: nothing was actually sent.)";
-      form.reset();
-    });
-  </script>
+  <script type="module" src="js/site.js"></script>
+  <script type="module" src="js/contact.js"></script>
 </body>
 </html>

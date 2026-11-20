@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Menu admin: Corner Bean</title>
+  <title>Admin: Corner Bean</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: system-ui, sans-serif; background: #fbf6ef; color: #2b211b; margin: 0; padding: 24px 16px; line-height: 1.5; }
@@ -30,7 +30,7 @@
 </head>
 <body>
   <main>
-    <h1>Menu admin</h1>
+    <h1>Site admin</h1>
     <p><a href="index.html">← Back to the site</a></p>
 
     <p id="loading" class="card">
@@ -60,6 +60,31 @@
         <button class="secondary" id="logout" type="button">Log out</button>
       </div>
 
+      <h2>Announcements</h2>
+      <div class="card">
+        <form id="ann-form">
+          <div>
+            <label for="ann-text">New announcement (shown at the top of the site)</label>
+            <textarea id="ann-text" rows="2" maxlength="200" required></textarea>
+          </div>
+          <button type="submit">Publish</button>
+          <p class="msg" id="ann-msg" role="status"></p>
+        </form>
+        <div id="ann-list"></div>
+      </div>
+
+      <h2>Opening hours</h2>
+      <div class="card">
+        <form id="hours-form">
+          <div>
+            <label for="hours-text">One line per row, up to 7 lines (e.g. Mon–Fri: 7:00 – 18:00)</label>
+            <textarea id="hours-text" rows="5"></textarea>
+          </div>
+          <button type="submit">Save hours</button>
+          <p class="msg" id="hours-msg" role="status"></p>
+        </form>
+      </div>
+
       <h2>Add a menu item</h2>
       <div class="card">
         <form id="add-form">
@@ -87,5 +112,6 @@
     </section>
   </main>
   <script type="module" src="js/admin.js"></script>
+  <script type="module" src="js/admin-extra.js"></script>
 </body>
 </html>
