@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only the shop owner's account may change the menu.
+    // Replace PASTE_OWNER_UID with the User UID from Firebase Console → Authentication → Users.
+    function isOwner() {
+      return request.auth != null && request.auth.uid == "PASTE_OWNER_UID";
+    }
+
+    function validItem() {
+      let d = request.resource.data;
+      return d.name is string && d.name.size() > 0 && d.name.size() <= 60
+          && d.price is number && d.price >= 0 && d.price <= 999
+          && d.description is string && d.description.size() <= 200;
+    }
+
+    match /menu/{itemId} {
+      allow read: if true;
+      allow create, update: if isOwner() && validItem();
+      allow delete: if isOwner();
+    }
+  }
+}
